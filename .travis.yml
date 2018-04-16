@@ -1,0 +1,13 @@
+sudo: true
+dist: trusty
+
+jobs:
+  include:
+    - stage: build docker image
+      script:
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - docker build -t docker-sslscan .
+      - docker tag docker-sslscan $DOCKER_USERNAME/docker-sslscan
+      - docker push $DOCKER_USERNAME/docker-sslscan
+    - stage: test
+      script: docker run --rm $DOCKER_USERNAME/docker-sslscan www.example.com
